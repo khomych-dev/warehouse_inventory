@@ -50,6 +50,17 @@ def get_part_name(name):
             return item
     return {"error": "Part not found"}
 
+@app.delete("/part/{name}")
+def delete_part_name(name):
+    for item in warehouse_db:
+        if item['name'] == name:
+            warehouse_db.remove(item)
+            save_data(warehouse_db)
+            return {"message": f"Item {name} removed"}
+    
+    return {'message': f"Item {name} not found"}
+added a function to delete a part by name
+
 @app.post("/add-part")
 def add_part(part: SparePart):
     warehouse_db.append(part.model_dump()) 
