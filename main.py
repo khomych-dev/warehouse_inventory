@@ -26,29 +26,29 @@ def save_data(data):
         
 warehouse_db = load_data()
 
-@app.get("/")
+@app.get('/')
 def read_root():
-    return {"message": "Warehouse System Online with JSON storage"}
+    return {'message': "Warehouse System Online with JSON storage"}
 
-@app.get("/status")
+@app.get('/status')
 def get_status():
-    return {"status": "Operational", "fuel_level": "100%"}
+    return {'status': 'Operational', 'fuel_level': '100%'}
 
 @app.get('/tools')
 def get_tools():
-    tools_list = ["Wrench", "Hammer", "Screwdriver", "Multimeter"]
+    tools_list = ['Wrench', 'Hammer', 'Screwdriver', 'Multimeter']
     return {'tools': tools_list}
     
-@app.get("/parts")
+@app.get('/parts')
 def get_all_parts():
-    return {"inventory": warehouse_db}
+    return {'inventory': warehouse_db}
 
 @app.get("/part/{name}")
 def get_part_name(name):
     for item in warehouse_db:
         if item['name'] == name:
             return item
-    return {"error": "Part not found"}
+    return {'error': "Part not found"}
 
 @app.delete("/part/{name}")
 def delete_part_name(name):
@@ -56,13 +56,22 @@ def delete_part_name(name):
         if item['name'] == name:
             warehouse_db.remove(item)
             save_data(warehouse_db)
-            return {"message": f"Item {name} removed"}
+            return {'message': f"Item {name} removed"}
     
-    return {'message': f"Item {name} not found"}
-added a function to delete a part by name
+    return {'error': f"Item {name} not found"}
 
-@app.post("/add-part")
+@app.put("/part/{name}/{new_quantity}")
+def updating_quantity(name: str, new_quantity: int):
+    for item in warehouse_db:
+        if item['name'] == name:
+            item['quantity'] = new_quantity
+            save_data(warehouse_db)
+            return item
+        
+    return {"error": f"Item {name} not found"}
+
+@app.post('/add-part')
 def add_part(part: SparePart):
     warehouse_db.append(part.model_dump()) 
     save_data(warehouse_db)
-    return {"message": f"Part {part.name} added to list", "count": len(warehouse_db)}
+    return {'message': f"Part {part.name} added to list", 'count': len(warehouse_db)}
