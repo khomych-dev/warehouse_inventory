@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from typing import List
 
 app = FastAPI()
 
@@ -8,6 +9,8 @@ class SparePart(BaseModel):
     price: float
     quantity: int
     category: str
+    
+warehouse_db = []
 
 @app.get("/")
 def read_root():
@@ -21,10 +24,12 @@ def get_status():
 def get_tools():
     tools_list = ["Wrench", "Hammer", "Screwdriver", "Multimeter"]
     return {'tools': tools_list}
+    
+@app.get("/parts")
+def get_all_parts():
+    return {"inventory": warehouse_db}
 
 @app.post("/add-part")
 def add_part(part: SparePart):
-    return {
-        "message": f"Item '{part.name}' successfully added!",
-        "received_data": part
-    }
+    warehouse_db.append(part)
+    return {"message": f"Part {part.name} added to list", "count": len(warehouse_db)}
