@@ -43,6 +43,13 @@ def get_tools():
 def get_all_parts():
     return {"inventory": warehouse_db}
 
+@app.get("/part/{name}")
+def get_part_name(name):
+    for item in warehouse_db:
+        if item['name'] == name:
+            return item
+    return {"error": "Part not found"}
+
 @app.post("/add-part")
 def add_part(part: SparePart):
     warehouse_db.append(part.model_dump()) 
