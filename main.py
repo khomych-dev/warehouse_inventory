@@ -46,10 +46,10 @@ def get_tools():
 def get_all_parts():
     return {'inventory': warehouse_db}
 
-@app.get("/part/{name}")
-def get_part_name(name):
+@app.get("/part/{part_id}")
+def get_part_name(part_id: str):
     for item in warehouse_db:
-        if item['name'] == name:
+        if item['id'] == part_id:
             return item
     return {'error': "Part not found"}
 
