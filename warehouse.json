@@ -1,9 +1,9 @@
 [
     {
         "id": "f4c80ad7-b022-4add-aab4-e879dc0bdff5",
-        "name": "Bolt M-10",
-        "price": 23.0,
-        "quantity": 45,
+        "name": "Bolt M-12",
+        "price": 12.0,
+        "quantity": 90,
         "category": "string"
     }
 ]

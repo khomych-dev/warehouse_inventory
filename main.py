@@ -63,13 +63,15 @@ def delete_part_by_id(part_id: str):
     
     return {"error": "No item with this ID was found"}
 
-@app.put("/part/{part_id}/{new_quantity}")
-def updating_quantity(part_id: str, new_quantity: int):
-    for item in warehouse_db:
+@app.put("/part/{part_id}")
+def update_part(part_id: str, updated_part: SparePart):
+    for i, item in enumerate(warehouse_db):
         if item['id'] == part_id:
-            item['quantity'] = new_quantity
+            new_data = updated_part.model_dump()
+            new_data['id'] = part_id
+            warehouse_db[i] = new_data
             save_data(warehouse_db)
-            return item
+            return new_data
         
     return {"error": f"Item {part_id} not found"}
 
