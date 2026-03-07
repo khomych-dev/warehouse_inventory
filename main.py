@@ -63,15 +63,15 @@ def delete_part_by_id(part_id: str):
     
     return {"error": "No item with this ID was found"}
 
-@app.put("/part/{name}/{new_quantity}")
-def updating_quantity(name: str, new_quantity: int):
+@app.put("/part/{part_id}/{new_quantity}")
+def updating_quantity(part_id: str, new_quantity: int):
     for item in warehouse_db:
-        if item['name'] == name:
+        if item['id'] == part_id:
             item['quantity'] = new_quantity
             save_data(warehouse_db)
             return item
         
-    return {"error": f"Item {name} not found"}
+    return {"error": f"Item {part_id} not found"}
 
 @app.post('/add-part')
 def add_part(part: SparePart):
