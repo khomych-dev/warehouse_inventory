@@ -53,15 +53,15 @@ def get_part_name(name):
             return item
     return {'error': "Part not found"}
 
-@app.delete("/part/{name}")
-def delete_part_name(name):
+@app.delete("/part/{part_id}")
+def delete_part_by_id(part_id: str):
     for item in warehouse_db:
-        if item['name'] == name:
+        if item['id'] == part_id:
             warehouse_db.remove(item)
             save_data(warehouse_db)
-            return {'message': f"Item {name} removed"}
+            return {"message": f"Part with ID {part_id} has been deleted"}
     
-    return {'error': f"Item {name} not found"}
+    return {"error": "No item with this ID was found"}
 
 @app.put("/part/{name}/{new_quantity}")
 def updating_quantity(name: str, new_quantity: int):
