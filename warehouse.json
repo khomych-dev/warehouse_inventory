@@ -1,8 +1,9 @@
 [
     {
-        "name": "Гайка М10",
-        "price": 1.5,
-        "quantity": 70,
+        "id": "f4c80ad7-b022-4add-aab4-e879dc0bdff5",
+        "name": "Bolt M-10",
+        "price": 23.0,
+        "quantity": 45,
         "category": "string"
     }
 ]

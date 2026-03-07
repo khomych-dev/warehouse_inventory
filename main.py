@@ -1,5 +1,7 @@
 import os
 import json
+import uuid
+from typing import Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
 
@@ -8,6 +10,7 @@ app = FastAPI()
 DB_FILE = "warehouse.json"
 
 class SparePart(BaseModel):
+    id: Optional[str] = None
     name: str
     price: float
     quantity: int
@@ -72,6 +75,8 @@ def updating_quantity(name: str, new_quantity: int):
 
 @app.post('/add-part')
 def add_part(part: SparePart):
-    warehouse_db.append(part.model_dump()) 
+    item = part.model_dump()
+    item['id'] = str(uuid.uuid4())
+    warehouse_db.append(item)
     save_data(warehouse_db)
     return {'message': f"Part {part.name} added to list", 'count': len(warehouse_db)}
