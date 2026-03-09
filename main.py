@@ -56,10 +56,11 @@ def get_all_parts(db:Session = Depends(get_db)):
     return {'inventory': parts_from_db}
 
 @app.get("/part/{part_id}")
-def get_part_name(part_id: str):
-    for item in warehouse_db:
-        if item['id'] == part_id:
-            return item
+def get_part_by_id(part_id: str, db: Session = Depends(get_db)):
+    item = db.query(DBPart).filter(DBPart.id == part_id).first()
+    if item:
+        return item
+    
     return {'error': "Part not found"}
 
 @app.delete("/part/{part_id}")
