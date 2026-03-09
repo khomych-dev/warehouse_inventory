@@ -101,15 +101,14 @@ def update_part(part_id: str, updated_part: SparePart):
 @app.post('/add-part')
 def add_part(part: SparePart, db: Session = Depends(get_db)):
     item_data = part.model_dump()
+    item_data.pop('id', None)
     
     new_id = str(uuid.uuid4())
     
     new_db_part = DBPart(id=new_id, **item_data)
     
     db.add(new_db_part)
-    
     db.commit()
-    
     db.refresh(new_db_part)
     
     return {'message': f"Part {new_db_part.name} added to SQL database", 'id': new_db_part.id}
