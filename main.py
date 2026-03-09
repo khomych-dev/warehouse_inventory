@@ -74,14 +74,20 @@ def delete_part_by_id(part_id: str, db: Session = Depends(get_db)):
     return {"error": "No item with this ID was found"}
 
 @app.put("/part/{part_id}")
-def update_part(part_id: str, updated_part: SparePart):
-    for i, item in enumerate(warehouse_db):
-        if item['id'] == part_id:
-            new_data = updated_part.model_dump()
-            new_data['id'] = part_id
-            warehouse_db[i] = new_data
-            save_data(warehouse_db)
-            return new_data
+def update_part(part_id: str, updated_part: SparePart, db: Session = Depends(get_db)):
+    db_item = db.query(DBPart).filter(DBPart.id == part_id).first()
+    if db_item:
+        new_data = updated_part.model_dump()
+        
+        db_item.name = new_data['name']
+        db_item.price = new_data['price']
+        db_item.quantity = new_data['quantity']
+        db_item.category = new_data['category']
+        
+        db.commit()
+        db.refresh(db_item)
+         
+        return db_item
         
     return {"error": f"Item {part_id} not found"}
 
