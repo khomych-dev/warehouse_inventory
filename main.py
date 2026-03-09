@@ -66,8 +66,9 @@ def get_tools():
     return {'tools': tools_list}
     
 @app.get('/parts')
-def get_all_parts():
-    return {'inventory': warehouse_db}
+def get_all_parts(db:Session = Depends(get_db)):
+    parts_from_db = db.query(DBPart).all()
+    return {'inventory': parts_from_db}
 
 @app.get("/part/{part_id}")
 def get_part_name(part_id: str):
