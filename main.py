@@ -6,6 +6,16 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from sqlalchemy import Column, String, Float, Integer
 from database import Base, engine
+from sqlalchemy.orm import Session
+from fastapi import Depends
+from database import SessionLocal
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 class DBPart(Base):
     __tablename__ = "parts"
