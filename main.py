@@ -64,13 +64,13 @@ def get_part_by_id(part_id: str, db: Session = Depends(get_db)):
     return {'error': "Part not found"}
 
 @app.delete("/part/{part_id}")
-def delete_part_by_id(part_id: str):
-    for item in warehouse_db:
-        if item['id'] == part_id:
-            warehouse_db.remove(item)
-            save_data(warehouse_db)
-            return {"message": f"Part with ID {part_id} has been deleted"}
-    
+def delete_part_by_id(part_id: str, db: Session = Depends(get_db)):
+    db_item = db.query(DBPart).filter(DBPart.id == part_id).first()
+    if db_item:
+        db.delete(db_item)
+        db.commit()
+        return {"message": f"Part with ID {part_id} has been deleted"}
+        
     return {"error": "No item with this ID was found"}
 
 @app.put("/part/{part_id}")
