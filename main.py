@@ -30,27 +30,12 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-DB_FILE = "warehouse.json"
-
 class SparePart(BaseModel):
     id: Optional[str] = None
     name: str
     price: float
     quantity: int
     category: str
-    
-def load_data():
-    if not os.path.exists(DB_FILE):
-        return []
-    
-    with open(DB_FILE, 'r', encoding='utf-8') as f:
-        return json.load(f)
-    
-def save_data(data):
-    with open(DB_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=4, ensure_ascii=False)
-        
-warehouse_db = load_data()
 
 @app.get('/')
 def read_root():
