@@ -99,9 +99,17 @@ def update_part(part_id: str, updated_part: SparePart):
     return {"error": f"Item {part_id} not found"}
 
 @app.post('/add-part')
-def add_part(part: SparePart):
-    item = part.model_dump()
-    item['id'] = str(uuid.uuid4())
-    warehouse_db.append(item)
-    save_data(warehouse_db)
-    return {'message': f"Part {part.name} added to list", 'count': len(warehouse_db)}
+def add_part(part: SparePart, db: Session = Depends(get_db)):
+    item_data = part.model_dump()
+    
+    new_id = str(uuid.uuid4())
+    
+    new_db_part = DBPart(id=new_id, **item_data)
+    
+    db.add(new_db_part)
+    
+    db.commit()
+    
+    db.refresh(new_db_part)
+    
+    return {'message': f"Part {new_db_part.name} added to SQL database", 'id': new_db_part.id}
