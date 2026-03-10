@@ -5,6 +5,8 @@ from fastapi import Depends
 from models import DBPart
 from schemas import SparePart
 from database import engine, Base, get_db
+from schemas import CategoryCreate, CategorySchema
+from models import Category
 
 
 Base.metadata.create_all(bind=engine)
@@ -36,6 +38,10 @@ def get_part_by_id(part_id: str, db: Session = Depends(get_db)):
         return item
     
     return {'error': "Part not found"}
+
+@app.get('/category')
+def get_categories(db: Session = Depends(get_db)):
+    return db.query(Category).all()
 
 @app.delete("/part/{part_id}")
 def delete_part_by_id(part_id: str, db: Session = Depends(get_db)):
@@ -79,3 +85,11 @@ def add_part(part: SparePart, db: Session = Depends(get_db)):
     db.refresh(new_db_part)
     
     return {'message': f"Part {new_db_part.name} added to SQL database", 'id': new_db_part.id}
+
+@app.post('/categories', response_model=CategorySchema)
+def create_category(category: CategoryCreate, db: Session = Depends(get_db)):
+    new_category = Category(name=category.name)
+    db.add(new_category)
+    db.commit()
+    db.refresh(new_category)
+    return new_category
