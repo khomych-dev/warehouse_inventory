@@ -1,7 +1,5 @@
 import uuid
-from typing import Optional
 from fastapi import FastAPI
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from database import SessionLocal
@@ -10,13 +8,6 @@ from database import SessionLocal
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
-class SparePart(BaseModel):
-    id: Optional[str] = None
-    name: str
-    price: float
-    quantity: int
-    category: str
 
 @app.get('/')
 def read_root():
