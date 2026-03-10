@@ -2,7 +2,9 @@ import uuid
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
 from fastapi import Depends
-from database import SessionLocal
+from models import DBPart
+from schemas import SparePart
+from database import engine, Base, get_db
 
 
 Base.metadata.create_all(bind=engine)
@@ -11,7 +13,7 @@ app = FastAPI()
 
 @app.get('/')
 def read_root():
-    return {'message': "Warehouse System Online with JSON storage"}
+    return {'message': "Warehouse System Online with SQL storage"}
 
 @app.get('/status')
 def get_status():
