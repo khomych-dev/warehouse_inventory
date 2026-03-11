@@ -10,7 +10,7 @@ from models import Category
 from schemas import ManufacturerCreate, ManufacturerSchema
 from models import Manufacturer
 
-
+EXCLUDED_FIELDS = {"id", "name"}
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -65,11 +65,11 @@ def update_part(part_id: str, updated_part: SparePart, db: Session = Depends(get
     if db_item:
         new_data = updated_part.model_dump()
         
-        db_item.name = new_data['name']
-        db_item.price = new_data['price']
-        db_item.quantity = new_data['quantity']
-        db_item.category_id = new_data['category_id']
-        db_item.manufacturer_id = new_data['manufacturer_id']
+        for key, values in new_data.items():
+            if key in EXCLUDED_FIELDS:
+                continue
+            
+            setattr(db_item, key, values)
         
         db.commit()
         db.refresh(db_item)
