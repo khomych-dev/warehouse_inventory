@@ -68,7 +68,8 @@ def update_part(part_id: str, updated_part: SparePart, db: Session = Depends(get
         db_item.name = new_data['name']
         db_item.price = new_data['price']
         db_item.quantity = new_data['quantity']
-        db_item.category = new_data['category']
+        db_item.category_id = new_data['category_id']
+        db_item.manufacturer_id = new_data['manufacturer_id']
         
         db.commit()
         db.refresh(db_item)
