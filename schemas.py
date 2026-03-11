@@ -14,9 +14,22 @@ class CategorySchema(CategoryBase):
     class Config:
         from_attributes = True
 
+class ManufacturerBase(BaseModel):
+    name: str
+    
+class ManufacturerCreate(ManufacturerBase):
+    pass
+
+class ManufacturerSchema(ManufacturerBase):
+    id: int
+    
+    class Config:
+        from_attributes = True
+
 class SparePart(BaseModel):
     id: Optional[str] = None
     name: str
     price: float
     quantity: int
     category_id: int
+    manufacturer_id: int
