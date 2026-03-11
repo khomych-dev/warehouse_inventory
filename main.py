@@ -7,6 +7,8 @@ from schemas import SparePart
 from database import engine, Base, get_db
 from schemas import CategoryCreate, CategorySchema
 from models import Category
+from schemas import ManufacturerCreate, ManufacturerSchema
+from models import Manufacturer
 
 
 Base.metadata.create_all(bind=engine)
@@ -42,6 +44,10 @@ def get_part_by_id(part_id: str, db: Session = Depends(get_db)):
 @app.get('/category')
 def get_categories(db: Session = Depends(get_db)):
     return db.query(Category).all()
+
+@app.get('/manufacturer')
+def get_manufacturers(db: Session = Depends(get_db)):
+    return db.query(Manufacturer).all()
 
 @app.delete("/part/{part_id}")
 def delete_part_by_id(part_id: str, db: Session = Depends(get_db)):
@@ -93,3 +99,11 @@ def create_category(category: CategoryCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_category)
     return new_category
+
+@app.post('/manufacturers', response_model=ManufacturerSchema)
+def create_manufacturer(manufacturer: ManufacturerCreate, db: Session = Depends(get_db)):
+    new_manufacturer = Manufacturer(name=manufacturer.name)
+    db.add(new_manufacturer)
+    db.commit()
+    db.refresh(new_manufacturer)
+    return new_manufacturer
