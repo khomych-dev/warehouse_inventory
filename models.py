@@ -27,4 +27,6 @@ class DBPart(Base):
     price = Column(Float)
     quantity = Column(Integer)
     category_id = Column(Integer, ForeignKey('categories.id'))
+    manufacture_id = Column(Integer, ForeignKey('manufactures.id'))
+    manufacturer = relationship('Manufacturer', back_populates='parts')
     category = relationship('Category', back_populates='parts')
