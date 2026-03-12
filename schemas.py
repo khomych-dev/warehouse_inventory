@@ -26,13 +26,23 @@ class ManufacturerSchema(ManufacturerBase):
     class Config:
         from_attributes = True
 
-class SparePart(BaseModel):
-    id: Optional[str] = None
+class SparePartBase(BaseModel):
     name: str
     price: float
     quantity: int
     category_id: int
     manufacturer_id: int
+
+class SparePartCreate(SparePartBase):
+    pass
+
+class SparePart(SparePartBase):
+    id: str
+    category: Optional[CategorySchema] = None
+    manufacturer: Optional[ManufacturerSchema] = None
+
+    class Config:
+        from_attributes = True
 
 class SparePartUpdate(BaseModel):
     id: Optional[str] = None
