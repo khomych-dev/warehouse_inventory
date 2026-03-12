@@ -66,7 +66,7 @@ def update_part(part_id: str, updated_part: SparePart, db: Session = Depends(get
         new_data = updated_part.model_dump()
         
         for key, values in new_data.items():
-            if key in EXCLUDED_FIELDS:
+            if key in EXCLUDED_FIELDS or values is None:
                 continue
             
             setattr(db_item, key, values)
