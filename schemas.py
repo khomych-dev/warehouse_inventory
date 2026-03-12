@@ -33,3 +33,11 @@ class SparePart(BaseModel):
     quantity: int
     category_id: int
     manufacturer_id: int
+
+class SparePartUpdate(BaseModel):
+    id: Optional[str] = None
+    name: Optional[str] = None
+    price: Optional[float] = None
+    quantity: Optional[int] = None
+    category_id: Optional[int] = None
+    manufacturer_id: Optional[int] = None
