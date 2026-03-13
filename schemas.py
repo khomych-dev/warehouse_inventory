@@ -30,8 +30,6 @@ class SparePartBase(BaseModel):
     name: str
     price: float
     quantity: int
-    category_id: int
-    manufacturer_id: int
 
 class SparePartCreate(SparePartBase):
     pass
