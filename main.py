@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from fastapi import HTTPException
-from sqlalchemy.exc import IntegrityError
+from typing import List
 from models import DBPart
 from schemas import SparePart
 from schemas import SparePartUpdate
@@ -31,10 +31,11 @@ def get_tools():
     tools_list = ['Wrench', 'Hammer', 'Screwdriver', 'Multimeter']
     return {'tools': tools_list}
     
-@app.get('/parts')
-def get_all_parts(db:Session = Depends(get_db)):
+
+@app.get('/parts', response_model=List[SparePart])
+def get_all_parts(db: Session = Depends(get_db)):
     parts_from_db = db.query(DBPart).all()
-    return {'inventory': parts_from_db}
+    return parts_from_db
 
 @app.get("/part/{part_id}", response_model=SparePart)
 def get_part_by_id(part_id: str, db: Session = Depends(get_db)):
