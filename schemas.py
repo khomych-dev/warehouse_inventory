@@ -45,7 +45,6 @@ class SparePart(SparePartBase):
         from_attributes = True
 
 class SparePartUpdate(BaseModel):
-    id: Optional[str] = None
     name: Optional[str] = None
     price: Optional[float] = None
     quantity: Optional[int] = None
