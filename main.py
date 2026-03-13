@@ -36,13 +36,13 @@ def get_all_parts(db:Session = Depends(get_db)):
     parts_from_db = db.query(DBPart).all()
     return {'inventory': parts_from_db}
 
-@app.get("/part/{part_id}")
+@app.get("/part/{part_id}", response_model=SparePart)
 def get_part_by_id(part_id: str, db: Session = Depends(get_db)):
     item = db.query(DBPart).filter(DBPart.id == part_id).first()
     if item:
         return item
     
-    return {'error': "Part not found"}
+    raise HTTPException(status_code=404, detail="Part not found")
 
 @app.get('/category')
 def get_categories(db: Session = Depends(get_db)):
