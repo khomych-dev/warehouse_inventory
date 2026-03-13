@@ -2,6 +2,8 @@ import uuid
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
 from fastapi import Depends
+from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
 from models import DBPart
 from schemas import SparePart
 from schemas import SparePartUpdate
@@ -60,24 +62,31 @@ def delete_part_by_id(part_id: str, db: Session = Depends(get_db)):
         
     return {"error": "No item with this ID was found"}
 
+
 @app.patch("/part/{part_id}")
 def patch_part(part_id: str, update_part: SparePartUpdate, db: Session = Depends(get_db)):
     db_item = db.query(DBPart).filter(DBPart.id == part_id).first()
-    if db_item:
-        new_data = update_part.model_dump(exclude_unset=True)
-        
-        for key, values in new_data.items():
-            if key in EXCLUDED_FIELDS:
-                continue
-            
-            setattr(db_item, key, values)
-            
+    
+    if not db_item:
+        raise HTTPException(status_code=404, detail=f"Item {part_id} not found")
+
+    new_data = update_part.model_dump(exclude_unset=True)
+    
+    for key, value in new_data.items():
+        if key in EXCLUDED_FIELDS:
+            continue
+        setattr(db_item, key, value)
+    
+    try:
         db.commit()
         db.refresh(db_item)
-        
         return db_item
-    
-    return {"error": f"Item {part_id} not found"}
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=400, 
+            detail="Integrity error: check if Category or Manufacturer ID exists."
+        )
 
 @app.put("/part/{part_id}")
 def update_part(part_id: str, updated_part: SparePart, db: Session = Depends(get_db)):
