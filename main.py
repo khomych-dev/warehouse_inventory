@@ -66,27 +66,29 @@ def delete_part_by_id(part_id: str, db: Session = Depends(get_db)):
 @app.patch("/part/{part_id}")
 def patch_part(part_id: str, update_part: SparePartUpdate, db: Session = Depends(get_db)):
     db_item = db.query(DBPart).filter(DBPart.id == part_id).first()
-    
     if not db_item:
-        raise HTTPException(status_code=404, detail=f"Item {part_id} not found")
+        raise HTTPException(status_code=404, detail="Item not found")
 
     new_data = update_part.model_dump(exclude_unset=True)
-    
+
+    if "category_id" in new_data:
+        category_exists = db.query(Category).filter(Category.id == new_data["category_id"]).first()
+        if not category_exists:
+            raise HTTPException(status_code=400, detail=f"Category with ID {new_data['category_id']} does not exist.")
+
+    if "manufacturer_id" in new_data:
+        manuf_exists = db.query(Manufacturer).filter(Manufacturer.id == new_data["manufacturer_id"]).first()
+        if not manuf_exists:
+            raise HTTPException(status_code=400, detail=f"Manufacturer with ID {new_data['manufacturer_id']} does not exist.")
+
     for key, value in new_data.items():
         if key in EXCLUDED_FIELDS:
             continue
         setattr(db_item, key, value)
-    
-    try:
-        db.commit()
-        db.refresh(db_item)
-        return db_item
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(
-            status_code=400, 
-            detail="Integrity error: check if Category or Manufacturer ID exists."
-        )
+
+    db.commit()
+    db.refresh(db_item)
+    return db_item
 
 @app.put("/part/{part_id}")
 def update_part(part_id: str, updated_part: SparePart, db: Session = Depends(get_db)):
