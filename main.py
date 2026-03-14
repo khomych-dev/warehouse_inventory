@@ -13,7 +13,7 @@ from models import DBCategory
 from schemas import ManufacturerCreate, ManufacturerSchema
 from models import DBManufacturer
 
-EXCLUDED_FIELDS = {"id", "name"}
+EXCLUDED_FIELDS = {"id"}
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -34,16 +34,15 @@ def get_tools():
 
 @app.get('/parts', response_model=List[SparePart])
 def get_all_parts(db: Session = Depends(get_db)):
-    parts_from_db = db.query(DBPart).all()
+    parts_from_db = db.query(DBPart).filter(DBPart.is_active == True).all()
     return parts_from_db
 
 @app.get("/part/{part_id}", response_model=SparePart)
 def get_part_by_id(part_id: str, db: Session = Depends(get_db)):
-    item = db.query(DBPart).filter(DBPart.id == part_id).first()
-    if item:
-        return item
-    
-    raise HTTPException(status_code=404, detail="Part not found")
+    item = db.query(DBPart).filter(DBPart.id == part_id, DBPart.is_active == True).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Part not found or inactive")
+    return item
 
 @app.get('/category')
 def get_categories(db: Session = Depends(get_db)):

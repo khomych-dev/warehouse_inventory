@@ -29,5 +29,5 @@ class DBPart(Base):
     category_id = Column(Integer, ForeignKey('categories.id'))
     manufacturer_id = Column(Integer, ForeignKey('manufacturers.id'))
     is_active = Column(Boolean, default=True)
-    manufacturer = relationship('Manufacturer', back_populates='parts')
-    category = relationship('Category', back_populates='parts')
+    manufacturer = relationship('DBManufacturer', back_populates='parts')
+    category = relationship('DBCategory', back_populates='parts')
