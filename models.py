@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from database import Base
 
 
-class Category(Base):
+class DBCategory(Base):
     __tablename__ = 'categories'
     
     id = Column(Integer, primary_key=True, index=True)
@@ -11,7 +11,7 @@ class Category(Base):
     
     parts = relationship('DBPart', back_populates='category')
     
-class Manufacturer(Base):
+class DBManufacturer(Base):
     __tablename__ = 'manufacturers'
     
     id = Column(Integer, primary_key=True, index=True)
