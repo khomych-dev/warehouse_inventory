@@ -9,9 +9,9 @@ from schemas import SparePart
 from schemas import SparePartUpdate
 from database import engine, Base, get_db
 from schemas import CategoryCreate, CategorySchema
-from models import Category
+from models import DBCategory
 from schemas import ManufacturerCreate, ManufacturerSchema
-from models import Manufacturer
+from models import DBManufacturer
 
 EXCLUDED_FIELDS = {"id", "name"}
 Base.metadata.create_all(bind=engine)
@@ -47,11 +47,11 @@ def get_part_by_id(part_id: str, db: Session = Depends(get_db)):
 
 @app.get('/category')
 def get_categories(db: Session = Depends(get_db)):
-    return db.query(Category).all()
+    return db.query(DBCategory).all()
 
 @app.get('/manufacturer')
 def get_manufacturers(db: Session = Depends(get_db)):
-    return db.query(Manufacturer).all()
+    return db.query(DBManufacturer).all()
 
 @app.delete("/part/{part_id}")
 def delete_part_by_id(part_id: str, db: Session = Depends(get_db)):
@@ -73,12 +73,12 @@ def patch_part(part_id: str, update_part: SparePartUpdate, db: Session = Depends
     new_data = update_part.model_dump(exclude_unset=True)
 
     if "category_id" in new_data:
-        category_exists = db.query(Category).filter(Category.id == new_data["category_id"]).first()
+        category_exists = db.query(DBCategory).filter(DBCategory.id == new_data["category_id"]).first()
         if not category_exists:
             raise HTTPException(status_code=400, detail=f"Category with ID {new_data['category_id']} does not exist.")
 
     if "manufacturer_id" in new_data:
-        manuf_exists = db.query(Manufacturer).filter(Manufacturer.id == new_data["manufacturer_id"]).first()
+        manuf_exists = db.query(DBManufacturer).filter(DBManufacturer.id == new_data["manufacturer_id"]).first()
         if not manuf_exists:
             raise HTTPException(status_code=400, detail=f"Manufacturer with ID {new_data['manufacturer_id']} does not exist.")
 
@@ -127,7 +127,7 @@ def add_part(part: SparePart, db: Session = Depends(get_db)):
 
 @app.post('/categories', response_model=CategorySchema)
 def create_category(category: CategoryCreate, db: Session = Depends(get_db)):
-    new_category = Category(name=category.name)
+    new_category = DBCategory(name=category.name)
     db.add(new_category)
     db.commit()
     db.refresh(new_category)
@@ -135,7 +135,7 @@ def create_category(category: CategoryCreate, db: Session = Depends(get_db)):
 
 @app.post('/manufacturers', response_model=ManufacturerSchema)
 def create_manufacturer(manufacturer: ManufacturerCreate, db: Session = Depends(get_db)):
-    new_manufacturer = Manufacturer(name=manufacturer.name)
+    new_manufacturer = DBManufacturer(name=manufacturer.name)
     db.add(new_manufacturer)
     db.commit()
     db.refresh(new_manufacturer)
