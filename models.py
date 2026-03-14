@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Float, Integer, ForeignKey
+from sqlalchemy import Column, String, Float, Integer, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -28,5 +28,6 @@ class DBPart(Base):
     quantity = Column(Integer)
     category_id = Column(Integer, ForeignKey('categories.id'))
     manufacturer_id = Column(Integer, ForeignKey('manufacturers.id'))
+    is_active = Column(Boolean, default=True)
     manufacturer = relationship('Manufacturer', back_populates='parts')
     category = relationship('Category', back_populates='parts')

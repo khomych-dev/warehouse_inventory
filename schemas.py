@@ -30,6 +30,7 @@ class SparePartBase(BaseModel):
     name: str
     price: float
     quantity: int
+    is_active: bool = True
 
 class SparePartCreate(SparePartBase):
     category_id: int
