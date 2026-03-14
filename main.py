@@ -53,15 +53,19 @@ def get_categories(db: Session = Depends(get_db)):
 def get_manufacturers(db: Session = Depends(get_db)):
     return db.query(DBManufacturer).all()
 
-@app.delete("/part/{part_id}")
-def delete_part_by_id(part_id: str, db: Session = Depends(get_db)):
-    db_item = db.query(DBPart).filter(DBPart.id == part_id).first()
-    if db_item:
-        db.delete(db_item)
-        db.commit()
-        return {"message": f"Part with ID {part_id} has been deleted"}
-        
-    return {"error": "No item with this ID was found"}
+@app.delete("/category/{category_id}")
+def soft_delete_category(category_id: int, db: Session = Depends(get_db)):
+    db_category = db.query(DBCategory).filter(DBCategory.id == category_id).first()
+    
+    if not db_category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    db_category.is_active = False
+    
+    db.query(DBPart).filter(DBPart.category_id == category_id).update({"is_active": False})
+    
+    db.commit()
+    return {"message": "Category {category_id} and all its products have been deactivated (Soft Deleted)"}
 
 
 @app.patch("/part/{part_id}")
