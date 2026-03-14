@@ -4,13 +4,14 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from fastapi import HTTPException
 from typing import List
-from models import DBPart
 from schemas import SparePart
+from schemas import SparePartCreate
 from schemas import SparePartUpdate
-from database import engine, Base, get_db
 from schemas import CategoryCreate, CategorySchema
-from models import DBCategory
 from schemas import ManufacturerCreate, ManufacturerSchema
+from database import engine, Base, get_db
+from models import DBPart
+from models import DBCategory
 from models import DBManufacturer
 
 EXCLUDED_FIELDS = {"id"}
@@ -114,19 +115,22 @@ def update_part(part_id: str, updated_part: SparePart, db: Session = Depends(get
     return {"error": f"Item {part_id} not found"}
 
 @app.post('/add-part')
-def add_part(part: SparePart, db: Session = Depends(get_db)):
-    item_data = part.model_dump()
-    item_data.pop('id', None)
+def add_part(part: SparePartCreate, db: Session = Depends(get_db)):
+    item_data = part.model_dump() 
     
     new_id = str(uuid.uuid4())
     
     new_db_part = DBPart(id=new_id, **item_data)
     
     db.add(new_db_part)
-    db.commit()
-    db.refresh(new_db_part)
+    try:
+        db.commit()
+        db.refresh(new_db_part)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Database error: {str(e)}")
     
-    return {'message': f"Part {new_db_part.name} added to SQL database", 'id': new_db_part.id}
+    return {'message': f"Part {new_db_part.name} added", 'id': new_db_part.id}
 
 @app.post('/categories', response_model=CategorySchema)
 def create_category(category: CategoryCreate, db: Session = Depends(get_db)):
